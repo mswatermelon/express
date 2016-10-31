@@ -77,7 +77,7 @@ rtAPI.post("/users", function(req, res) {
 });
 
 rtAPI.get("/users/:id", function(req, res) {
-  let user = users.findByParam('id', req.body.id);
+  let user = users.findByParam('id', req.params.id);
 
   if (user){
     res.json(user);
@@ -88,13 +88,12 @@ rtAPI.get("/users/:id", function(req, res) {
 });
 
 rtAPI.put("/users/:id", function(req, res) {
-  let id = req.body.id || users.length + 1,
+  let id = req.params.id,
       name = req.body.name,
       score = req.body.score,
-      user = users.findByParam('id', req.body.id);
+      user = users.findByParam('id', id);
 
   if (user){
-    user.id = id;
     user.name = name;
     user.score = score;
     res.json(user);
@@ -105,10 +104,8 @@ rtAPI.put("/users/:id", function(req, res) {
 });
 
 rtAPI.delete("/users/:id", function(req, res) {
-  let id = req.body.id || users.length + 1,
-      name = req.body.name,
-      score = req.body.score,
-      user = users.findByParam('id', req.body.id, 'index');
+  let id = req.params.id,
+      user = users.findByParam('id', id, 'index');
 
   if (user){
     users.splice(user, 1);
@@ -166,14 +163,13 @@ let RPC = {
     }
   },
   update: (params, callback) => {
-    let id = params.id || users.length + 1,
+    let id = params.id,
         name = params.name,
         score = params.score,
         user = users.findByParam('id', params.id),
         result = {jsonrpc: 2.0, result: []};
 
     if (user){
-      user.id = id;
       user.name = name;
       user.score = score;
       result['result'] = user;
@@ -184,15 +180,13 @@ let RPC = {
     }
   },
   delete: (params, callback) => {
-    let id = params.id || users.length + 1,
-        name = params.name,
-        score = params.score,
+    let id = params.id,
         user = users.findByParam('id', params.id, 'index'),
         result = {jsonrpc: 2.0, result: []};
 
     if (user){
       users.splice(user, 1);
-      result["result"] = user;
+      result["result"] = id;
       callback(null, result);
     }
     else {
